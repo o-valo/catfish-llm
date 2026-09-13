@@ -3,7 +3,7 @@
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue)
 
-**Sprache:** Deutsch · [English](README.eng)
+**Sprache:** Deutsch · [English](README.eng.md)
 
 **Version 0.9.9 (Beta)** – Änderungshistorie siehe [`CHANGELOG.md`](CHANGELOG.md).
 Serverseitiger Zugzwang, Halluzinationsschutz und die Behandlung der
