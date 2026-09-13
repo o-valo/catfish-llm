@@ -1,0 +1,7 @@
+# chess – Laufzeit-Abhängigkeiten
+# Getestet mit den hier gepinnten Versionen (siehe .venv).
+
+chess==1.11.2        # python-chess: Brettlogik, PGN, UCI-Anbindung
+Flask==3.1.3         # REST-API des chess-proxy
+waitress==3.0.2      # WSGI-Server für den Proxy (Produktion)
+requests==2.34.2     # LLM-Client + OpenWebUI-Tool (HTTP-Aufrufe)
