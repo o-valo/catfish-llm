@@ -3,6 +3,12 @@
 # Dateiname: pruefen.sh
 # Projekt:   chess – LLM + Stockfish Schachanbindung
 # ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # Voraussetzungen prüfen – und fehlende Teile selbst nachinstallieren.
 #
 # Wird von install.sh, start.sh und start_proxy.sh eingebunden (`source`),

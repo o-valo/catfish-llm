@@ -57,6 +57,32 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
   Skripte und Monitoring geeignet. Fehlermeldungen nennen die konkrete
   Ursache (z. B. fehlendes `python3-venv`) samt Installationsbefehl.
 - `start_proxy.sh check` (entspricht `install.sh --check`).
+- **`LICENSE` (GPL-3.0-or-later):** Das Projekt steht jetzt ausdrücklich
+  unter der GNU General Public License, Version 3 oder später (Copyright
+  2026 Olav) – Text vollständig, 1:1 aus der Vorlage übernommen. Der Grund
+  ist die Lizenzlage der Abhängigkeiten: Der Proxy importiert
+  `python-chess` (Brettlogik, PGN, UCI-Anbindung), und das ist
+  **GPL-3.0-or-later**. Ein Werk mit GPL-Code darf nur unter der GPL
+  weitergegeben werden – eine permissivere Lizenz (z. B. MIT) wäre
+  **unzulässig** gewesen, weil die Kombination nur in eine Richtung
+  funktioniert. Die übrigen Abhängigkeiten sind GPL-kompatibel (Flask
+  BSD-3-Clause, waitress ZPL 2.1, requests Apache-2.0); Stockfish bleibt
+  durch den Aufruf als eigener Prozess ein eigenständiges Programm.
+- **Lizenzhinweis in jeder Datei:** Alle Python-, Shell-, Konfigurations-
+  und Doku-Dateien tragen jetzt `Copyright (C) 2026 Olav` und
+  `SPDX-License-Identifier: GPL-3.0-or-later` im Kopf (in den Markdown-
+  Dateien in der Fußzeile). Damit reist die Lizenzangabe mit jeder
+  einzelnen Datei mit, auch wenn sie das Repository verlässt – genau das
+  empfiehlt die GPL für Quellcode. `openwebui_tool.py` behält dabei seinen
+  Metadaten-Docstring als ersten Ausdruck (die Angabe steht als Kommentar
+  davor), damit OpenWebUI Titel/Autor/Version weiterhin lesen kann.
+- **`README.eng` (neu):** vollständige englische Fassung des README – alle
+  Abschnitte von Komponenten über Installation und Nutzung bis Lizenz.
+  Damit ist das Projekt auch für englischsprachige Spieler zugänglich; die
+  drei Notationen (englische SAN, deutsche Notation, UCI) waren dafür schon
+  in 0.9.9 gleichgestellt. Neu darin dokumentiert: die englischen
+  Befehlsaliase des Shell-Clients (`board`, `moves`, `best`, `eval`, `new`,
+  `resign`, `help`, `quit`), die es in `chess_shell.py` bereits gibt.
 
 ### Behoben
 
@@ -115,6 +141,12 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
   übertragbar bleibt.
 - Plattformnamen und UCI-Test der Engine gibt es nur noch an einer Stelle
   (`pruefen.sh`) statt doppelt in Installer und Engine-Skript.
+- `README.md`: Kopfzeile mit Sprachumschaltung (Deutsch ⇄ English) und
+  Lizenz-Badge (GPL v3); neuer Abschnitt „Lizenz“ – mit kurzer Begründung,
+  warum GPL und nicht MIT (Abhängigkeit `python-chess`), dem
+  Copyright-Hinweis im Wortlaut und der Abgrenzung zu Stockfish. Dazu der
+  Abschnitt „Powered by AI“ am Ende, der die KI-Unterstützung bei der
+  Entwicklung offenlegt.
 
 ### Tests
 
@@ -278,3 +310,10 @@ Erste versionierte Fassung.
   `apt install stockfish` → `/usr/games/stockfish`).
 - README-Komponententabelle aktualisiert (requirements.txt, Journal,
   Engine-Quellcode).
+
+---
+
+Copyright (C) 2026 Olav (https://github.com/o-valo) ·
+SPDX-License-Identifier: GPL-3.0-or-later ·
+Freie Software unter der GNU GPL v3 oder später, ohne Gewährleistung –
+siehe [`LICENSE`](LICENSE).

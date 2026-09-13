@@ -123,3 +123,10 @@ ist*. Wenn möglich den Chatverlauf als Screenshot oder Text.
 - **Der Chat ist das Gedächtnis.** Wird der Verlauf im Client gelöscht,
   beginnt ein neues Spiel.
 - **Die Stärke** hängt an `ENGINE_SKILL` in `chess.ini` (0–20, Standard 12).
+
+---
+
+Copyright (C) 2026 Olav (https://github.com/o-valo) ·
+SPDX-License-Identifier: GPL-3.0-or-later ·
+Freie Software unter der GNU GPL v3 oder später, ohne Gewährleistung –
+siehe [`LICENSE`](LICENSE).

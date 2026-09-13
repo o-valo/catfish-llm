@@ -3,6 +3,12 @@
 # Dateiname: install.sh
 # Projekt:   chess – LLM + Stockfish Schachanbindung
 # ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # Installer: richtet alles ein bzw. repariert Fehlendes – beliebig oft
 # ausführbar (idempotent). Es wird nur getan, was wirklich fehlt.
 #

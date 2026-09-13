@@ -1,6 +1,9 @@
 # chess – LLM spielt Schach (mit Stockfish im Hintergrund)
 
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
+![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue)
+
+**Sprache:** Deutsch · [English](README.eng)
 
 **Version 0.9.9 (Beta)** – Änderungshistorie siehe [`CHANGELOG.md`](CHANGELOG.md).
 Serverseitiger Zugzwang, Halluzinationsschutz und die Behandlung der
@@ -389,3 +392,63 @@ Der Installer lädt je Plattform das offizielle Universal-Binary – es wählt
 die bestmögliche Variante automatisch und läuft daher sowohl auf alter
 Hardware ohne AVX2/BMI2 (z. B. Intel Atom) als auch auf Raspberry Pi und
 anderen ARM-Boards.
+
+## Lizenz
+
+Dieses Projekt steht unter der **GNU General Public License, Version 3 oder
+später (GPL-3.0-or-later)** – der vollständige Lizenztext liegt in
+[`LICENSE`](LICENSE).
+
+```text
+Copyright (C) 2026 Olav (https://github.com/o-valo)
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation, either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with
+this program. If not, see <https://www.gnu.org/licenses/>.
+```
+
+**Warum GPL und nicht MIT?** Nicht aus Vorliebe, sondern weil die
+Abhängigkeiten es vorgeben: Der Proxy importiert **`python-chess`**
+(Brettlogik, PGN, UCI-Anbindung) – und das steht unter **GPL-3.0-or-later**.
+Ein Programm, das GPL-Code enthält, darf nur unter der GPL weitergegeben
+werden. Eine permissivere Lizenz wie MIT wäre hier **unzulässig** gewesen:
+MIT und GPL sind nur in eine Richtung kombinierbar (MIT-Code darf in ein
+GPL-Projekt, nicht umgekehrt).
+
+**Was das praktisch bedeutet**
+
+- Wer den Proxy weitergibt oder ein Paket daraus baut, muss den Quellcode
+  mitliefern bzw. darauf verweisen – das ist der Kern der GPL. Hier ist das
+  ohnehin erfüllt: Das Projekt liegt offen auf GitHub.
+- Die übrigen Abhängigkeiten sind GPL-kompatibel: `Flask` (BSD-3-Clause),
+  `waitress` (ZPL 2.1), `requests` (Apache-2.0).
+- **Stockfish** (ebenfalls GPL-3.0) lädt der Installer nur als
+  **eigenständiges Programm** – es ist kein Bestandteil dieses Repositorys,
+  sondern ein separates Werkzeug (siehe
+  [`stockfish-install.sh`](stockfish-install.sh)), das Lizenz und Quellcode
+  selbst mitbringt. Wer Stockfish selbst weitergibt, muss dessen
+  GPL-Bedingungen beachten.
+- Für **Offenlegungspflichten** genügt ein Verweis auf dieses Repository;
+  die Lizenz erlaubt ausdrücklich, das Programm zu ändern und
+  weiterzuverbreiten – nur eben nicht als geschlossenes Produkt.
+
+## Powered by AI
+
+Dieses Projekt ist **mit KI-Unterstützung entstanden** – Code, Doku und
+Tests wurden im Dialog mit einem KI-Coding-Agenten erarbeitet. Die Idee, die
+Architektur, die fachlichen Entscheidungen und die Abnahme am Ende stammen
+vom Menschen; die Umsetzung entstand gemeinschaftlich.
+
+Das ist kein Zufall, sondern passt zum Gegenstand: Das Programm lässt ein
+LLM Schach spielen und zieht dabei genau die Grenze, die solche Systeme
+brauchen – das Modell formuliert, der Server prüft. Züge werden validiert,
+halluzinierte Züge korrigiert, Werkzeugaufrufe erzwungen. Derselbe Ansatz
+hat auch beim Bauen geholfen: viel schreiben lassen, alles nachprüfen.

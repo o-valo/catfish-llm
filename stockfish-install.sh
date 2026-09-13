@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 # ==============================================================================
+# Dateiname: stockfish-install.sh
+# Projekt:   chess – LLM + Stockfish Schachanbindung
+# ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # stockfish-install.sh – Stockfish für dieses System installieren
 #
 # Die Engine wird NICHT mit dem Projekt ausgeliefert. Dieses Skript lädt die

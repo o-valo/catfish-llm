@@ -3,6 +3,12 @@
 # Dateiname: chess_service.py
 # Projekt:   chess – LLM + Stockfish Schachanbindung (Tool-API)
 # ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # Spielverwaltung und die eigentlichen Schach-Werkzeuge, die dem LLM über den
 # Proxy zur Verfügung stehen. Thread-sicher (Flask/waitress ist multithreaded),
 # mehrere gleichzeitige Partien über session_id möglich.

@@ -3,6 +3,12 @@
 # Dateiname: chess_engine.py
 # Projekt:   chess – LLM + Stockfish Schachanbindung
 # ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # Wrapper um die Stockfish-Engine (UCI) via python-chess.
 #   - Liefert die N besten Kandidatenzüge (MultiPV) für die aktuelle Stellung
 #   - Berechnet Bewertungen (Centipawns / Matt-in-N)

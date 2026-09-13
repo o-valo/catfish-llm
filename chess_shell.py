@@ -3,6 +3,12 @@
 # Dateiname: chess_shell.py
 # Projekt:   chess – LLM + Stockfish Schachanbindung
 # ==============================================================================
+# Copyright (C) 2026 Olav (https://github.com/o-valo)
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+# Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
+# LICENSE. Weitergabe ohne jede Gewährleistung.
+# ==============================================================================
 # Im Terminal gegen den chess-proxy spielen – ohne OpenWebUI.
 #
 # Der Client spricht dieselbe OpenAI-kompatible API wie OpenWebUI
