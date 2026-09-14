@@ -1,4 +1,8 @@
-# catfish-llm – plays chess with Stockfish in the background
+<p align="center">
+  <img src="catfish-llm.png" alt="catfish-llm Banner" width="100%">
+</p>
+
+# catfish-llcatfishchess with Stockfish in the background
 
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue)
