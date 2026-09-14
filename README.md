@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="catfish-llm.png" alt="catfish-llm Banner" width="100%">
+  <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
 </p>
 
 # catfish-llcatfishchess with Stockfish in the background
