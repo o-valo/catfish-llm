@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="catfish-llm.png" alt="catfish-llm Banner" width="100%">
+</p>
+
 # catfish-llm – spielt Schach mit Stockfish im Hintergrund
 
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
