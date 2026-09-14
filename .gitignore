@@ -1,0 +1,40 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# --- Laufzeit-Dateien des Proxys ---
+proxy.log
+proxy.pid
+*.log
+*.pid
+
+# --- Partie-Daten (zur Laufzeit erzeugt; die Ordner legt der Code selbst an) ---
+partien_journal/
+partien_proxy/
+partien/
+
+# --- Transferschnappschüsse / Build-Artefakte ---
+*.tar.gz
+
+# --- Testsuiten/Entwicklerwerkzeuge: liegen nur in der Arbeitskopie ---
+tests/
+
+# --- Stockfish-Engine: wird vom Installer geladen, nicht mitgeliefert ---
+engines/
+
+# --- Umgebung / IDE ---
+.env
+.idea/
+.vscode/
+*.swp
+*.swo
+.*.swp
+
+# --- Betriebssystem ---
+.DS_Store
+Thumbs.db
+
+
