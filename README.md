@@ -3,12 +3,11 @@
 </p>
 
     Preface
-    The Mechanical Turk is yesterday—catfish-llm teaches an LLM how to play chess :-)
+    The Mechanical Turk is a thing of the past—catfish-llm teaches an LLM how to play chess :-)
 
-Cultural Adaptation: Replacing "Der Schachtürke" with "The Mechanical Turk" ensures the historical reference to Wolfgang von Kempelen's chess-playing automaton is immediately understood by an English-speaking audience.
+Well, not quite. What I actually built is a modern version of a "Mechanical Turk." It cleverly bridges the gap because even large LLMs typically can't play proper chess on their own. And if they actually can now, you can bet the developers secretly baked a "Mechanical Turk" into them as well :-) In my setup, the LLM simply relies on the Stockfish engine in the background.
 
-Tone & Flow: Keeping the friendly, casual phrasing and the trailing smiley preserves the exact lighthearted vibe of your original German introduction.
-
+If you want to test it out yourself, you can easily install the software on a Linux machine.
 
 # catfish-llm plays chess with Stockfish in the background
 
