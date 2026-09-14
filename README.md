@@ -2,8 +2,8 @@
   <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
 </p>
 
-## Preface
-## The Mechanical Turk is yesterday—catfish-llm teaches an LLM how to play chess :-)
+    Preface
+    The Mechanical Turk is yesterday—catfish-llm teaches an LLM how to play chess :-)
 
 Cultural Adaptation: Replacing "Der Schachtürke" with "The Mechanical Turk" ensures the historical reference to Wolfgang von Kempelen's chess-playing automaton is immediately understood by an English-speaking audience.
 
