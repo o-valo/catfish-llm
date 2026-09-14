@@ -83,20 +83,32 @@ def format_uci(zug):
     return u
 
 
-def baue_brettgrafik(board):
-    """Unicode-Brett mit Koordinaten (aus Schwarz-Sicht gespiegelt für Weiß)."""
+def baue_brettgrafik(board, aus_sicht="weiss"):
+    """Unicode-Brett mit Koordinaten – aus der Sicht des Menschen.
+
+    aus_sicht="weiss"   → Weiß unten, Dateien a…h von links (Standard)
+    aus_sicht="schwarz" → Brett gespiegelt: Schwarz unten, Dateien h…a
+
+    Die Beschriftung wird mitgespiegelt, sonst passt sie nicht mehr zur
+    Stellung – ein Schwarz-Spieler sähe seinen König sonst scheinbar auf
+    der falschen Seite.
+    """
     symbole = {
         "P": "♙", "N": "♘", "B": "♗", "R": "♖", "Q": "♕", "K": "♔",
         "p": "♟", "n": "♞", "b": "♝", "r": "♜", "q": "♛", "k": "♚",
     }
+    gespiegelt = str(aus_sicht).strip().lower() in ("schwarz", "s", "black", "b")
+    reihen = range(8) if gespiegelt else range(7, -1, -1)
+    spalten = range(7, -1, -1) if gespiegelt else range(8)
+    beschriftung = "hgfedcba" if gespiegelt else "abcdefgh"
     zeilen = []
-    for reihe in range(7, -1, -1):
+    for reihe in reihen:
         zelle = [f" {reihe + 1} "]
-        for spalte in range(8):
+        for spalte in spalten:
             figur = board.piece_at(chess.square(spalte, reihe))
             zelle.append(symbole.get(figur.symbol() if figur else "", "·"))
         zeilen.append(" ".join(zelle))
-    zeilen.append("   a b c d e f g h")
+    zeilen.append("   " + " ".join(beschriftung))
     return "\n".join(zeilen)
 
 
@@ -273,6 +285,9 @@ def main():
 
     board = chess.Board()
     user_weiss = (args.engine == "white")
+    # Das Brett wird immer aus Sicht des Menschen gezeichnet – spielt er
+    # Schwarz, steht es auf dem Kopf, damit seine Figuren unten sind.
+    mensch_sicht = "weiss" if user_weiss else "schwarz"
     llm_name = cfg["LLM_NAME"]
     stil = cfg["LLM_STIL"] + (f"; {args.personality}" if args.personality else "")
     llm_farbe = "weißen" if not user_weiss else "schwarzen"
@@ -287,7 +302,7 @@ def main():
         f"({'Weiß' if not user_weiss else 'Schwarz'}, LLM + Stockfish)")
     log(f"  Engine: Stockfish | LLM: {cfg['LLM_MODEL']} @ {cfg['LLM_BASE_URL']}")
     log("=" * 62)
-    log(baue_brettgrafik(board))
+    log(baue_brettgrafik(board, aus_sicht=mensch_sicht))
 
     pgn_name = os.path.join(BASE_DIR, "partien",
                             datetime.datetime.now().strftime("partie_%Y%m%d_%H%M%S.pgn"))
@@ -362,7 +377,7 @@ def main():
                     log(f"{llm_name} sagt: {kommentar}")
 
             log("")
-            log(baue_brettgrafik(board))
+            log(baue_brettgrafik(board, aus_sicht=mensch_sicht))
             log(f"Stellungseinschätzung: {engine.einschaetzung(board)}")
 
         if not ende_grund:

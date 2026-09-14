@@ -24,6 +24,22 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
 
 ### Hinzugefügt
 
+- **Brettansicht aus Sicht des Menschen:** `baue_brettgrafik()` nimmt die
+  gewünschte Sicht entgegen – spielt der Mensch Schwarz, wird das Brett samt
+  Beschriftung gespiegelt (Reihe 1 oben, Dateien h…a), sodass seine Figuren
+  unten bleiben und der eigene König rechts der Mitte steht.
+- **Darstellung für dunkle Terminals (Shell-Client):** `--figuren buchstaben`
+  zeichnet K Q R B N P / k q r b n p und ist damit in jeder Schrift eindeutig.
+  `--hintergrund auto|hell|dunkel` steuert die Figurenfarben: Auf dunklem Grund
+  werden weiße Figuren hell und schwarze gedimmt gezeichnet, weil Unicode die
+  schwarzen Figuren gefüllt (♟) und die weißen nur als Umriss (♙) darstellt –
+  beide in der Vordergrundfarbe, weshalb die Farben dort vertauscht wirken.
+  `auto` fragt das Terminal (OSC 11, sonst `COLORFGBG`) und fragt nur nach,
+  wenn keine Antwort kommt; ohne Antwort bleibt alles wie bisher.
+  Voreinstellungen: `SHELL_HINTERGRUND` und `SHELL_FIGUREN` in `chess.ini`.
+- **Der ZUSTAND-Block nennt die Farbe des Menschen** (`MENSCH: …`) neben der
+  des LLM. Der Shell-Client leitet sie damit nicht mehr aus der Gegenseite ab;
+  ältere Stände mit nur `DU BIST: …` werden weiterhin so gedeutet.
 - **`chess_shell.py`:** Terminal-Client, der gegen den laufenden Proxy
   spielt – ohne OpenWebUI. Zeichnet das Brett aus der Server-FEN (korrekt
   ausgerichtet für Weiß *und* Schwarz), führt ein eigenes Protokoll des
@@ -90,6 +106,13 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
 
 ### Behoben
 
+- **Brett stand für Schwarz-Spieler auf dem Kopf:** Das Server-Brett
+  (`brett_ansehen`, damit auch in OpenWebUI) wurde immer aus Weiß-Sicht
+  gezeichnet – ein Mensch mit Schwarz sah seine Figuren oben und hielt die
+  Ausrichtung für falsch. Die Farbe des Menschen wird jetzt in der Partie
+  gespeichert (`nutzer_farbe`) und für die Ausrichtung verwendet. Dasselbe gilt
+  für die Konsolen-App: Bei `./start.sh --engine=black` stand das Brett
+  ebenfalls immer mit Weiß unten.
 - **Menschenzug ging verloren (bug-2json):** Werkzeugaufrufe im nativen
   Token-Format ohne JSON-Klammern – `[gegner_zug(zug="b8c6")]` – wurden als
   leere Parameter `{}` geparst. Der Zug wurde nie ausgeführt, der zweite
@@ -124,6 +147,23 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
 
 ### Geändert
 
+- **Ablaufdiagramm in beiden READMEs:** Die dreizeilige Skizze oben wurde
+  durch ein vollständiges Diagramm ersetzt – Client, Gateway (Port 8300),
+  LLM und Stockfish samt Verbindungswegen (OpenAI-Format bzw. UCI-Code) und
+  dem Hinweis auf den Konsolenweg `./start.sh`, der ohne Gateway auskommt.
+  Es greift das Flussdiagramm aus dem Banner auf und macht es als Text
+  lesbar – auch ohne Bild und ohne Vorleseprogramm.
+- **Alternativtext für das Banner:** Das Eingangsbild trug nur
+  `alt="catfish-llm Banner"` und war damit für Screenreader, Suchmaschinen
+  und alle ohne Bildanzeige inhaltslos. Beide READMEs beschreiben jetzt die
+  Szene selbst – Rechenzentrum, Roboterarm am Schachbrett, Monitor mit dem
+  Ablauf AI → LLM → Stockfish Gateway.
+- **Installationsanleitung vervollständigt:** Der Abschnitt „Installation“
+  begann mit `cd ~/catfish-llm` und ließ offen, wie das Verzeichnis überhaupt
+  dorthin kommt. Beide READMEs zeigen jetzt den `git clone`-Befehl und den
+  Hinweis, dass der Installer **ordnerunabhängig** ist: Er legt `.venv` und
+  `engines/` neben dem Skript an, ein per „Download ZIP“ entpacktes
+  Verzeichnis (`catfish-llm-main`) funktioniert also genauso.
 - **Umbenennung im Repository:** Das Projekt heißt jetzt **`catfish-llm`**
   (vorher „chess – LLM spielt Schach“). Betroffen sind Titel und Kopfzeilen
   aller Dateien, die Doku, der Name, den der Proxy als `service` und als
@@ -171,6 +211,10 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
 
 ### Tests
 
+- `tests/ansicht_test.py`: neuer Test für die Brettausrichtung (König in beiden
+  Sichten rechts der Mitte, Spiegeln samt Dateileiste), die neue `MENSCH:`-Angabe
+  im Zustand, den Buchstaben-Modus, die bei Farbcodes unveränderte sichtbare
+  Brettbreite sowie die Hintergrunderkennung über `COLORFGBG` und OSC 11.
 - `tests/proxy_test.py`: neue Szenarien 10–16 (Schlüsselwort-Parameter,
   wiederholter Aufruf, Feldnennung, erfundener Zug, Null-Rochade, deutsche
   Notation ohne Schachzeichen, Gleichwertigkeit der Notationen).

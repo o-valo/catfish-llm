@@ -114,9 +114,9 @@ class SpielVerwaltung:
             pass  # Archivierung darf den Spielbetrieb nie blockieren
 
     @staticmethod
-    def _brettgrafik(brett):
+    def _brettgrafik(brett, aus_sicht="weiss"):
         from chess_game import baue_brettgrafik
-        return baue_brettgrafik(brett)
+        return baue_brettgrafik(brett, aus_sicht=aus_sicht)
 
     # ------------------------------------------------------------------ #
     # Partie-Journal + ZUSTAND-Block (Grounding gegen LLM-Halluzinationen)
@@ -172,13 +172,20 @@ class SpielVerwaltung:
     def _zustand_block(self, spiel):
         """Maßgeblicher Zustand, der an JEDES Tool-Ergebnis angehängt wird."""
         brett = spiel["brett"]
-        du_bist = {"weiss": "Weiß", "schwarz": "Schwarz"}[spiel["eigene_farbe"]]
+        farben = {"weiss": "Weiß", "schwarz": "Schwarz"}
+        du_bist = farben[spiel["eigene_farbe"]]
+        # Farbe des Menschen: gespeichert, sonst die Gegenseite des LLM.
+        # Sie steht im Zustand, damit Client und LLM das Brett richtig herum
+        # lesen – vorher musste die Gegenseite erraten werden.
+        mensch = spiel.get("nutzer_farbe") or (
+            "schwarz" if spiel["eigene_farbe"] == "weiss" else "weiss")
         am_zug = "Weiß" if brett.turn == chess.WHITE else "Schwarz"
         verlauf = self._verlauf_text(brett)
         zeilen = [
             "=== ZUSTAND (maßgeblich) ===",
             f"Partie-ID: {spiel['id']} | Halbzüge: {len(brett.move_stack)}",
-            f"DU BIST: {du_bist} | GEGNER: {spiel['gegner_name']}",
+            f"DU BIST: {du_bist} | MENSCH: {farben[mensch]} "
+            f"| GEGNER: {spiel['gegner_name']}",
             f"Am Zug: {am_zug}",
         ]
         if verlauf:
@@ -225,6 +232,7 @@ class SpielVerwaltung:
                 "partie": partie,
                 "pgn_node": partie,  # aktueller Knoten für add_variation()
                 "eigene_farbe": eig,
+                "nutzer_farbe": gegenseite,
                 "gegner_name": name,
                 "letzte_mensch_san": None,  # letzter ausgeführter Menschen-Zug
                 "weiss_name": name if eig == "schwarz" else "Gambit (LLM)",
@@ -364,7 +372,7 @@ class SpielVerwaltung:
         with self._lock:
             brett = spiel["brett"]
             am_zug = "Weiß" if brett.turn == chess.WHITE else "Schwarz"
-            grafik = self._brettgrafik(brett)
+            grafik = self._brettgrafik(brett, spiel.get("nutzer_farbe", "weiss"))
             text = (f"Stellung nach {len(brett.move_stack)} Halbzügen. "
                     f"{am_zug} ist am Zug.\n\n{grafik}\n\nFEN: {brett.fen()}")
             return text + "\n\n" + self._zustand_block(spiel)

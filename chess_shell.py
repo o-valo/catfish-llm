@@ -20,6 +20,8 @@
 #   ./chess_shell.py                       # Konfiguration aus chess.ini
 #   ./chess_shell.py --url http://10.7.0.116:8300
 #   ./chess_shell.py --farbe schwarz       # du spielst Schwarz
+#   ./chess_shell.py --figuren buchstaben  # statt Figurenzeichen (K Q R B N P)
+#   ./chess_shell.py --hintergrund dunkel  # Terminal-Grund (auto|hell|dunkel)
 #   ./chess_shell.py --session abend-1     # feste Partie-ID (weiterspielen)
 #   ./chess_shell.py --help
 # ==============================================================================
@@ -74,16 +76,83 @@ import requests
 
 FIGUREN = {"P": "♙", "N": "♘", "B": "♗", "R": "♖", "Q": "♕", "K": "♔",
            "p": "♟", "n": "♞", "b": "♝", "r": "♜", "q": "♛", "k": "♚"}
+# Buchstaben statt Zeichen: in jeder Schrift und auf jedem Grund eindeutig.
+FIGUREN_BUCHSTABEN = {k: k for k in "PNBRQKpnbrqk"}
+# ANSI nur für den dunklen Grund: helles Weiß bzw. Grau.
+ANSI = {"weiss": "\x1b[97m", "schwarz": "\x1b[90m", "aus": "\x1b[0m"}
 
 
-def brett_text(fen, invertiert=False):
+def osc11_hintergrund(frist=0.25):
+    """Terminal nach seiner Hintergrundfarbe fragen (OSC 11).
+
+    Antworten xterm, kitty, wezterm, iTerm2, VTE und Co. mit „rgb:…“, ist das
+    die verlässlichste Auskunft – besser als jede Umgebungsvariable.
+    Rückgabe: 'hell', 'dunkel' oder '' (keine Antwort).
+    """
+    if not (sys.stdin.isatty() and sys.stdout.isatty()):
+        return ""
+    try:
+        import select
+        import termios
+        import tty
+    except ImportError:                 # z. B. Windows
+        return ""
+    fd = sys.stdin.fileno()
+    alt = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        sys.stdout.write("\x1b]11;?\x07")
+        sys.stdout.flush()
+        puffer, ende = "", time.time() + frist
+        while time.time() < ende:
+            bereit, _, _ = select.select([fd], [], [], max(0.0, ende - time.time()))
+            if not bereit:
+                break
+            puffer += os.read(fd, 64).decode("utf-8", "replace")
+            if "\x07" in puffer or "\x1b\\" in puffer:
+                break
+    except Exception:
+        return ""
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, alt)
+    treffer = re.search(
+        r"rgb:([0-9a-fA-F]{2,4})/([0-9a-fA-F]{2,4})/([0-9a-fA-F]{2,4})", puffer)
+    if not treffer:
+        return ""
+    r, g, b = (int(x[:2], 16) for x in treffer.groups())
+    return "hell" if (0.299 * r + 0.587 * g + 0.114 * b) > 127 else "dunkel"
+
+
+def colorfgbg_hintergrund():
+    """COLORFGBG auswerten (rxvt, Konsole …): 'fg;bg', Hintergrund 0–6 = dunkel."""
+    wert = os.environ.get("COLORFGBG", "").strip()
+    if ";" in wert:
+        letzte = wert.split(";")[-1].strip()
+        if letzte.isdigit():
+            return "hell" if int(letzte) >= 7 else "dunkel"
+    return ""
+
+
+def hintergrund_ermitteln():
+    """'hell', 'dunkel' oder '' – erst das Terminal fragen, dann die Umgebung."""
+    return osc11_hintergrund() or colorfgbg_hintergrund()
+
+
+def brett_text(fen, invertiert=False, figuren="unicode", farbig=False):
     """Brett als Text – aus Sicht des angegebenen Spielers.
 
     Bewusst selbst gezeichnet: `chess.Board.unicode(invert_color=True)`
     vertauscht nur die Figurenfarben und dreht das Brett NICHT, ein
     Schwarz-Spieler sähe also seine Figuren oben und falsch eingefärbt.
+
+    `figuren="buchstaben"` zeichnet K/Q/R/B/N/P (weiß) bzw. k/q/r/b/n/p
+    (schwarz) – nötig, wenn die Schrift beide Zeichensätze gleich darstellt.
+    `farbig=True` färbt weiße Figuren hell und schwarze gedimmt: Unicode
+    zeichnet ♟ gefüllt und ♙ nur als Umriss, beides in der Vordergrundfarbe
+    – auf dunklem Grund wirken die Farben sonst vertauscht.
     """
     brett = chess.Board(fen)
+    zeichen = FIGUREN_BUCHSTABEN if str(figuren).lower().startswith("b") else FIGUREN
     reihen = range(1, 9) if invertiert else range(8, 0, -1)
     dateien = "hgfedcba" if invertiert else "abcdefgh"
     trenner = "  +" + "---+" * 8
@@ -93,7 +162,14 @@ def brett_text(fen, invertiert=False):
         for datei in dateien:
             feld = chess.square(chess.FILE_NAMES.index(datei), reihe - 1)
             figur = brett.piece_at(feld)
-            zellen.append(" " + (FIGUREN[figur.symbol()] if figur else " ") + " ")
+            if figur is None:
+                zellen.append("   ")
+                continue
+            zeichenreihe = zeichen[figur.symbol()]
+            if farbig and zeichen is FIGUREN:
+                zeichenreihe = (ANSI["weiss" if figur.color else "schwarz"]
+                                + zeichenreihe + ANSI["aus"])
+            zellen.append(" " + zeichenreihe + " ")
         zeilen.append(f"{reihe} |" + "|".join(zellen) + "|")
         zeilen.append(trenner)
     zeilen.append("    " + "   ".join(dateien))
@@ -155,6 +231,7 @@ def konfiguration():
     cfg = configparser.ConfigParser()
     cfg.read(datei)
     proxy = cfg["proxy"] if cfg.has_section("proxy") else {}
+    chess_teil = cfg["chess"] if cfg.has_section("chess") else {}
     host = proxy.get("PROXY_HOST", "127.0.0.1").strip() or "127.0.0.1"
     # Bindet der Proxy an alle Interfaces, ist lokal 127.0.0.1 gemeint.
     if host in ("0.0.0.0", "::", "*"):
@@ -165,8 +242,11 @@ def konfiguration():
         "url": f"http://{host}:{proxy.get('PROXY_PORT', '8300').strip() or '8300'}",
         "api_key": proxy.get("PROXY_API_KEY", "").strip(),
         "modell": proxy.get("PROXY_MODEL_NAME", "catfish-llm").strip(),
-        "gegner": (cfg["chess"].get("LLM_NAME", "Gambit").strip()
-                   if cfg.has_section("chess") else "Gambit"),
+        "gegner": chess_teil.get("LLM_NAME", "Gambit").strip() or "Gambit",
+        "figuren": (chess_teil.get("SHELL_FIGUREN", "unicode").strip().lower()
+                    or "unicode"),
+        "hintergrund": (chess_teil.get("SHELL_HINTERGRUND", "auto").strip().lower()
+                        or "auto"),
     }
 
 
@@ -185,6 +265,16 @@ def argumente():
     p.add_argument("--api-key", default=k["api_key"], help="PROXY_API_KEY")
     p.add_argument("--kein-brett", action="store_true",
                    help="Brett nicht automatisch nach jedem Zug zeigen")
+    p.add_argument("--figuren", choices=["unicode", "buchstaben"],
+                   default=k["figuren"] if k["figuren"] in ("unicode", "buchstaben")
+                   else "unicode",
+                   help="Figurensatz: 'buchstaben' (K Q R B N P) ist in jeder "
+                        "Schrift eindeutig lesbar")
+    p.add_argument("--hintergrund", choices=["auto", "hell", "dunkel"],
+                   default=k["hintergrund"] if k["hintergrund"] in
+                   ("auto", "hell", "dunkel") else "auto",
+                   help="Hintergrund des Terminals – steuert die Figurenfarben "
+                        "(Standard: auto = Terminal fragen)")
     return p.parse_args(), k
 
 
@@ -209,6 +299,10 @@ class ShellClient:
         self.session = args.session
         self.farbe = args.farbe
         self.kein_brett = args.kein_brett
+        self.figuren = getattr(args, "figuren", "unicode")
+        self.hintergrund = getattr(args, "hintergrund", "auto")
+        self.farbig = False          # wird beim ersten Brett entschieden
+        self.ansicht_gefragt = False
         self.gegner = konfig["gegner"]
         self.modell = konfig["modell"]
         self.kopf = {"Content-Type": "application/json"}
@@ -247,20 +341,56 @@ class ShellClient:
             "fen": hole(r"FEN: (.+)"),
             "verlauf": (hole(r"Verlauf: (.*)") or "").strip(),
             "am_zug": hole(r"Am Zug: (\w+)"),
-            "du_bist": hole(r"DU BIST: (\w+)"),
+            "du_bist": hole(r"DU BIST: (\w+)"),          # Farbe des LLM
+            "mensch": hole(r"MENSCH: (\w+)"),           # Farbe des Menschen
             "halbzuege": int(hole(r"Halbzüge: (\d+)", "0")),
             "text": text,
         }
 
     # --------------------------------------------------------------- Brett --
+    def ansicht_klaeren(self):
+        """Einmalig entscheiden, ob die Figuren eingefärbt werden.
+
+        Auf dunklem Grund sehen die gefüllten schwarzen Figuren heller aus als
+        die weißen Umrisse – die Farben wirken vertauscht. Deshalb wird der
+        Hintergrund ermittelt (Terminal-Abfrage, COLORFGBG) und nur dann
+        eingefärbt. Ist er nicht ermittelbar, wird einmal gefragt; bleibt die
+        Antwort aus, ändert sich nichts.
+        """
+        if self.figuren == "buchstaben" or self.hintergrund == "hell":
+            return
+        if self.hintergrund == "dunkel":
+            self.farbig = True
+            return
+        ermittelt = hintergrund_ermitteln()
+        if ermittelt:
+            self.farbig = (ermittelt == "dunkel")
+            return
+        if self.ansicht_gefragt or not sys.stdout.isatty():
+            return
+        self.ansicht_gefragt = True
+        try:
+            antwort = input("  Terminal dunkel? Die Figurenfarben wirken dort "
+                            "sonst vertauscht. [j/N, Enter = unverändert] ")
+        except (EOFError, KeyboardInterrupt):
+            print()
+            return
+        antwort = antwort.strip().lower()
+        if antwort in ("j", "ja", "y", "yes"):
+            self.farbig = True
+        else:                       # n, Enter oder Unbekanntes: wie bisher
+            self.farbig = False
+
     def brett_zeichnen(self, stand):
         if not stand["fen"]:
             print("  (noch keine Partie – 'neu' startet eine)\n")
             return
         brett = chess.Board(stand["fen"])
+        self.ansicht_klaeren()
         # Aus Sicht des Menschen zeichnen
         print(brett_text(stand["fen"],
-                         invertiert=(self.mensch_farbe() == "schwarz")))
+                         invertiert=(self.mensch_farbe() == "schwarz"),
+                         figuren=self.figuren, farbig=self.farbig))
         if stand["verlauf"]:
             print(f"  Verlauf: {stand['verlauf']}")
         print(f"  Am Zug: {stand['am_zug']}"
@@ -280,8 +410,18 @@ class ShellClient:
         return "Weiß" if self.mensch_farbe() == "weiss" else "Schwarz"
 
     def farbe_vom_server(self, stand):
-        """Übernimmt die Farbe, die der Server für den Menschen führt."""
-        if self.farbe or not stand.get("du_bist"):
+        """Übernimmt die Farbe, die der Server für den Menschen führt.
+
+        Der Server nennt sie ausdrücklich als „MENSCH: …“. Ältere Stände
+        nennen nur die Farbe des LLM – dann gilt die Gegenseite.
+        """
+        if self.farbe:
+            return
+        mensch = stand.get("mensch")
+        if mensch in ("Weiß", "Schwarz"):
+            self.farbe = "weiss" if mensch == "Weiß" else "schwarz"
+            return
+        if not stand.get("du_bist"):
             return
         self.farbe = "schwarz" if stand["du_bist"] == "Weiß" else "weiss"
 

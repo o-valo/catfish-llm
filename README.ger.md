@@ -1,5 +1,6 @@
 <p align="center">
-  <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
+  <img src="catfish-llm.jpg" width="100%"
+       alt="Ein Rechenzentrum: neben einem Serverschrank steht ein Tisch, auf dem ein Industrieroboterarm Schachfiguren auf einem Schachbrett bewegt; ein Monitor zeigt den Ablauf AI → LLM → Stockfish Gateway">
 </p>
 
     Vorwort:
@@ -34,9 +35,22 @@ Schach-Engine **Stockfish** – auf zwei Wegen:
 2. **Konsolen-App:** Klassisches Terminal-Spiel Mensch gegen LLM.
 
 ```
-OpenWebUI ──► catfish-llm (Port 8300) ──► llm-bahnhof/Ollama/… (LLM)
-                  │
-                  └─► Stockfish + Spielverwaltung (chess_service)
+          Du ──► OpenWebUI / beliebiger OpenAI-Client
+          │ OpenAI-Format  /v1/chat/completions
+          ▼
+  ┌───────┬────────────────────────────────┐
+  │  catfish-llm – das Gateway, Port 8300  │
+  │  chess_proxy.py + chess_service.py     │
+  │  Brettzustand, Zugzwang, PGN, Journal  │
+  └───────┬───────────────────────┬────────┘
+          │ Werkzeugaufrufe       │ UCI-Code
+          ▼                       ▼
+          ┌──────────────┐        ┌──────────────┐
+          │  das LLM     │        │  Stockfish   │
+          │  OpenAI-API  │        │  die Engine  │
+          └──────────────┘        └──────────────┘
+
+  Ohne Client, direkt in der Konsole:  ./start.sh  (chess_game.py, ohne Gateway)
 ```
 
 > **Projektname:** `catfish-llm`. Die Datei- und Befehlsnamen
@@ -79,9 +93,15 @@ automatisch normalisiert (`.../`, `.../v1` → `.../v1/chat/completions`).
 ## Installation
 
 ```bash
-cd ~/catfish-llm
+git clone https://github.com/o-valo/catfish-llm.git
+cd catfish-llm
 ./install.sh
 ```
+
+Der Installer ist **ordnerunabhängig**: Er bestimmt seinen eigenen Ort
+(`dirname "$0"`) und legt `.venv` und `engines/` direkt daneben an. Ein per
+„Download ZIP“ entpackter Ordner funktioniert genauso – er heißt dann nur
+`catfish-llm-main`.
 
 Der Installer ist **idempotent**: Er prüft jede Voraussetzung und richtet nur
 das ein, was wirklich fehlt. In sechs Schritten:
@@ -276,6 +296,8 @@ richtiger Ausrichtung für Schwarz.
 ```bash
 ./chess_shell.py                       # Konfiguration aus chess.ini
 ./chess_shell.py --farbe schwarz       # du spielst Schwarz
+./chess_shell.py --figuren buchstaben  # Buchstaben statt Figuren (K Q R B N P)
+./chess_shell.py --hintergrund dunkel  # dunkles Terminal: Figuren einfärben
 ./chess_shell.py --session abend-1     # feste Partie-ID (später weiterspielen)
 ./chess_shell.py --url http://10.7.0.116:8300
 ./chess_shell.py --kein-brett          # Brett nicht automatisch zeigen
@@ -297,6 +319,27 @@ Beispiel:
 
   Du> e7e5
 ```
+
+Das Brett wird immer **aus deiner Sicht** gezeichnet: Spielst du Schwarz, steht
+es gespiegelt (Reihe 1 oben, Dateien `h…a`), damit deine eigenen Figuren unten
+bleiben – der eigene König steht so immer rechts der Brettmitte.
+
+Sehen die Figuren **farbvertauscht** aus, liegt das an der Schrift, nicht am
+Spiel: Unicode zeichnet die schwarzen Figuren *gefüllt* (♟) und die weißen nur
+als Umriss (♙) – beide in der Vordergrundfarbe. Auf dunklem Grund wirken die
+gefüllten Figuren dadurch heller als die weißen Umrisse. Zwei Auswege sind
+eingebaut:
+
+```bash
+./chess_shell.py --hintergrund dunkel   # einfärben: weiß hell, schwarz gedimmt
+./chess_shell.py --figuren buchstaben   # Buchstaben: K Q R B N P / k q r b n p
+```
+
+Mit `--hintergrund auto` (Standard) fragt der Client das Terminal nach seiner
+Hintergrundfarbe (OSC 11, sonst die Variable `COLORFGBG`) und färbt nur dann
+– schlägt das fehl, fragt er einmal nach; ohne Antwort ändert sich nichts.
+Beide Voreinstellungen stehen in `chess.ini` (`SHELL_HINTERGRUND`,
+`SHELL_FIGUREN`).
 
 Züge dürfen in jeder Notation eingegeben werden (UCI `e2e4`, englische SAN
 `Nf3`/`O-O`, deutsch `Sf3`/`0-0`) – alles Weitere wird als Nachricht an den
