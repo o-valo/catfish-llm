@@ -1,4 +1,4 @@
-# Changelog – chess
+# Changelog – catfish-llm
 
 Alle nennenswerten Änderungen werden hier dokumentiert.
 
@@ -12,7 +12,7 @@ Versionierung: [Semantische Versionierung](https://semver.org/) (MAJOR.MINOR.PAT
 
 ## [0.9.9] – 2026-09-13
 
-Erste **Beta** für externe Tester (siehe [`BETA.md`](BETA.md)). Der
+Erste **Beta** für externe Tester (siehe [`BETA.ger.md`](BETA.ger.md)). Der
 serverseitige Zugzwang, der Halluzinationsschutz und die Notations-
 behandlung sind durch 16 Proxy-Szenarien sowie echte Live-Partien über den
 Proxy validiert – in UCI, englischer SAN und deutscher Notation, inklusive
@@ -76,8 +76,12 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
   empfiehlt die GPL für Quellcode. `openwebui_tool.py` behält dabei seinen
   Metadaten-Docstring als ersten Ausdruck (die Angabe steht als Kommentar
   davor), damit OpenWebUI Titel/Autor/Version weiterhin lesen kann.
-- **`README.eng` (neu):** vollständige englische Fassung des README – alle
-  Abschnitte von Komponenten über Installation und Nutzung bis Lizenz.
+- **Zweisprachige Doku:** Die **englische Fassung ist jetzt die
+  Standard-`README.md`**, die deutsche liegt als **`README.ger.md`** daneben
+  – beide mit allen Abschnitten von Komponenten über Installation und
+  Nutzung bis Lizenz, die Kopfzeile schaltet zwischen den Sprachen um.
+  Dieselbe Aufteilung haben die Beta-Hinweise: `BETA.md` (englisch) und
+  `BETA.ger.md` (deutsch).
   Damit ist das Projekt auch für englischsprachige Spieler zugänglich; die
   drei Notationen (englische SAN, deutsche Notation, UCI) waren dafür schon
   in 0.9.9 gleichgestellt. Neu darin dokumentiert: die englischen
@@ -120,6 +124,22 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
 
 ### Geändert
 
+- **Umbenennung im Repository:** Das Projekt heißt jetzt **`catfish-llm`**
+  (vorher „chess – LLM spielt Schach“). Betroffen sind Titel und Kopfzeilen
+  aller Dateien, die Doku, der Name, den der Proxy als `service` und als
+  Modell meldet (`catfish-llm` statt `chess-proxy` bzw. `gambit-schach`)
+  sowie der OpenWebUI-Tool-Titel. **Datei- und Befehlsnamen bleiben
+  unverändert** (`chess_proxy.py`, `chess.ini`, `./start_proxy.sh`) – sie
+  sind Teil der stabilen Schnittstelle; ein Hinweis dazu steht in beiden
+  READMEs. Wer den Proxy als Modell eingetragen hat, muss den Namen im
+  Client einmal umstellen.
+- **Sprachfassungen umbenannt:** `README.md` → **`README.ger.md`**
+  (deutsch), `README.eng.md` → **`README.md`**. Die englische Fassung ist
+  damit die Standard-`README.md` im Repository (wie auf GitHub üblich),
+  die deutsche bleibt als `README.ger.md` daneben. Die Beta-Anleitung
+  folgt derselben Aufteilung: das bisherige deutsche `BETA.md` wurde zu
+  **`BETA.ger.md`**, die neue **`BETA.md`** ist die englische Fassung.
+  Verweise in allen Dateien sowie hier angepasst.
 - **Notationen gleichwertig:** `chess_service.german_to_san()` übersetzt
   deutsche Figurenkürzel auf dem Weg ins Spiel (Werkzeug-Parameter,
   REST-API, erzwungener Menschenzug). Englische SAN (`Nf3`, `O-O`) und UCI
@@ -141,8 +161,9 @@ aufgehoben. `0.9.x` heißt „funktioniert praktisch, ist aber noch nicht
   übertragbar bleibt.
 - Plattformnamen und UCI-Test der Engine gibt es nur noch an einer Stelle
   (`pruefen.sh`) statt doppelt in Installer und Engine-Skript.
-- `README.md`: Kopfzeile mit Sprachumschaltung (Deutsch ⇄ English) und
-  Lizenz-Badge (GPL v3); neuer Abschnitt „Lizenz“ – mit kurzer Begründung,
+- `README.md` und `README.ger.md`: Kopfzeile mit Sprachumschaltung
+  (Deutsch ⇄ English) und Lizenz-Badge (GPL v3); neuer Abschnitt „Lizenz“
+  – mit kurzer Begründung,
   warum GPL und nicht MIT (Abhängigkeit `python-chess`), dem
   Copyright-Hinweis im Wortlaut und der Abgrenzung zu Stockfish. Dazu der
   Abschnitt „Powered by AI“ am Ende, der die KI-Unterstützung bei der

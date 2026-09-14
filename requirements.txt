@@ -3,10 +3,10 @@
 # Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
 # LICENSE. Weitergabe ohne jede Gewährleistung.
 # ==============================================================================
-# chess – Laufzeit-Abhängigkeiten
+# catfish-llm – Laufzeit-Abhängigkeiten
 # Getestet mit den hier gepinnten Versionen (siehe .venv).
 
 chess==1.11.2        # python-chess: Brettlogik, PGN, UCI-Anbindung
-Flask==3.1.3         # REST-API des chess-proxy
+Flask==3.1.3         # REST-API des Proxys
 waitress==3.0.2      # WSGI-Server für den Proxy (Produktion)
 requests==2.34.2     # LLM-Client + OpenWebUI-Tool (HTTP-Aufrufe)

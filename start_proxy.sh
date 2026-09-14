@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Dateiname: start_proxy.sh
-# Projekt:   chess – LLM + Stockfish Schachanbindung
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -9,7 +9,7 @@
 # Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
 # LICENSE. Weitergabe ohne jede Gewährleistung.
 # ==============================================================================
-# start_proxy.sh – Startet den chess-proxy (OpenAI-kompatible API mit
+# start_proxy.sh – Startet catfish-llm (OpenAI-kompatible API mit
 #                  eingebauten Schach-Werkzeugen: Stockfish + Spielverwaltung)
 #
 # Aufruf:    ./start_proxy.sh              startet den Proxy
@@ -189,7 +189,7 @@ starten() {
         exit 1
     fi
     if [ -f "$PIDFILE" ] && pid_gehoert_hierher "$(cat "$PIDFILE")"; then
-        echo "chess-proxy läuft bereits (PID $(cat "$PIDFILE"))."
+        echo "catfish-llm läuft bereits (PID $(cat "$PIDFILE"))."
         echo "  Adressen: $(pwd)/$(basename "$0") adressen"
         exit 0
     fi
@@ -238,7 +238,7 @@ starten() {
         sleep 0.25
     done
     if kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
-        echo "chess-proxy gestartet (PID $(cat "$PIDFILE"))."
+        echo "catfish-llm gestartet (PID $(cat "$PIDFILE"))."
         echo "  Log:      $(pwd)/$LOGFILE"
         echo "  Stoppen:  $(pwd)/$(basename "$0") stop"
         echo
@@ -258,14 +258,14 @@ stoppen() {
             kill "$PID"
             sleep 1
             kill -0 "$PID" 2>/dev/null && kill -9 "$PID"
-            echo "chess-proxy gestoppt (PID $PID)."
+            echo "catfish-llm gestoppt (PID $PID)."
         elif kill -0 "$PID" 2>/dev/null; then
             echo "Hinweis: ${PIDFILE} zeigt auf PID ${PID} – die gehört NICHT zu"
             echo "         diesem Ordner (z. B. Kopie des Projekts)."
             echo "         Der Prozess bleibt unangetastet, die Datei wird entfernt."
             pgrep -af chess_proxy.py || true
         else
-            echo "chess-proxy lief nicht mehr."
+            echo "catfish-llm lief nicht mehr."
         fi
         rm -f "$PIDFILE"
     else
@@ -276,13 +276,13 @@ stoppen() {
 
 status() {
     if [ -f "$PIDFILE" ] && pid_gehoert_hierher "$(cat "$PIDFILE")"; then
-        echo "chess-proxy läuft (PID $(cat "$PIDFILE"))."
+        echo "catfish-llm läuft (PID $(cat "$PIDFILE"))."
         return 0
     fi
-    echo "chess-proxy läuft nicht (in diesem Ordner)."
+    echo "catfish-llm läuft nicht (in diesem Ordner)."
     lokal_fremd="$(pgrep -af chess_proxy.py || true)"
     if [ -n "$lokal_fremd" ]; then
-        echo "Andernorts läuft aber noch ein chess-proxy:"
+        echo "Andernorts läuft aber noch ein catfish-llm-Proxy:"
         printf '%s\n' "$lokal_fremd"
     fi
     exit 1

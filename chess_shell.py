@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # Dateiname: chess_shell.py
-# Projekt:   chess – LLM + Stockfish Schachanbindung
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -9,7 +9,7 @@
 # Freie Software unter der GNU GPL v3 oder später – vollständiger Text in
 # LICENSE. Weitergabe ohne jede Gewährleistung.
 # ==============================================================================
-# Im Terminal gegen den chess-proxy spielen – ohne OpenWebUI.
+# Im Terminal gegen catfish-llm spielen – ohne OpenWebUI.
 #
 # Der Client spricht dieselbe OpenAI-kompatible API wie OpenWebUI
 # (/v1/chat/completions) und zeichnet das Brett lokal aus der FEN, die der
@@ -164,7 +164,7 @@ def konfiguration():
     return {
         "url": f"http://{host}:{proxy.get('PROXY_PORT', '8300').strip() or '8300'}",
         "api_key": proxy.get("PROXY_API_KEY", "").strip(),
-        "modell": proxy.get("PROXY_MODEL_NAME", "gambit-schach").strip(),
+        "modell": proxy.get("PROXY_MODEL_NAME", "catfish-llm").strip(),
         "gegner": (cfg["chess"].get("LLM_NAME", "Gambit").strip()
                    if cfg.has_section("chess") else "Gambit"),
     }
@@ -173,7 +173,7 @@ def konfiguration():
 def argumente():
     k = konfiguration()
     p = argparse.ArgumentParser(
-        description="Im Terminal gegen den chess-proxy spielen.",
+        description="Im Terminal gegen catfish-llm spielen.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=BEFEHLE)
     p.add_argument("--url", default=k["url"],

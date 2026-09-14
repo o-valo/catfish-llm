@@ -1,6 +1,6 @@
 # ==============================================================================
 # Dateiname: openwebui_tool.py
-# Projekt:   chess – LLM + Stockfish Schachanbindung (Tool-API)
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung (Tool-API)
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -14,10 +14,10 @@
 # der Datei bleiben.
 # ==============================================================================
 """
-title: Gambit Schach (chess-proxy)
+title: catfish-llm (Schach)
 author: Olav
 version: 1.0
-description: Bindet die Schach-App des chess-proxys als natives
+description: Bindet die Schach-App von catfish-llm als natives
              OpenWebUI-Tool ein.
 """
 
@@ -29,7 +29,7 @@ class Tools:
     das das LLM per nativem Function-Calling selbstständig aufrufen kann.
 
     Konfiguration:
-      - CHESS_PROXY_URL: Basis-URL des chess-proxys
+      - CHESS_PROXY_URL: Basis-URL von catfish-llm
       - CHESS_PROXY_KEY: API-Key (leer lassen, wenn der Proxy keinen verlangt)
       - session_id: OpenWebUI übergibt diese automatisch pro Chat/Sitzung,
         dadurch hat jeder Chat seine eigene Partie.
@@ -52,7 +52,7 @@ class Tools:
                               timeout=self.timeout)
             daten = r.json()
         except Exception as exc:
-            return f"FEHLER: chess-proxy nicht erreichbar ({exc!r})"
+            return f"FEHLER: catfish-llm nicht erreichbar ({exc!r})"
         if r.status_code != 200:
             return f"FEHLER: {daten.get('error', r.text)}"
         return daten.get("result", "")

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ==============================================================================
-# chess – Startskript: Mensch gegen LLM (Stockfish-Backend)
+# catfish-llm – Startskript: Mensch gegen LLM (Stockfish-Backend)
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later

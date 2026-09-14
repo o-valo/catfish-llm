@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # Dateiname: chess_service.py
-# Projekt:   chess – LLM + Stockfish Schachanbindung (Tool-API)
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung (Tool-API)
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -99,8 +99,8 @@ class SpielVerwaltung:
             brett = spiel["brett"]
             spiel["partie"].headers["White"] = spiel["weiss_name"]
             spiel["partie"].headers["Black"] = spiel["schwarz_name"]
-            spiel["partie"].headers["Event"] = "chess-proxy (LLM + Stockfish)"
-            spiel["partie"].headers["Site"] = "chess-proxy"
+            spiel["partie"].headers["Event"] = "catfish-llm (LLM + Stockfish)"
+            spiel["partie"].headers["Site"] = "catfish-llm"
             spiel["partie"].headers["Date"] = spiel["start_zeit"][:10].replace("-", ".")
             if brett.is_game_over():
                 if brett.is_checkmate():

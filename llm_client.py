@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # Dateiname: llm_client.py
-# Projekt:   chess – LLM + Stockfish Schachanbindung
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later

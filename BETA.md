@@ -1,132 +1,139 @@
-# Beta-Test – chess 0.9.9
+# Beta test – catfish-llm 0.9.9
 
-Danke, dass du mittestest! Du spielst dabei Schach gegen ein LLM, das die
-Partie über lokale Werkzeuge führt; die Züge kommen aus **Stockfish**, die
-Kommentare vom Modell. Alles läuft auf dem chess-Rechner – dein Chat geht
-nur an den dort konfigurierten LLM-Endpunkt.
+**Language:** [Deutsch](BETA.ger.md) · English
 
-**Was 0.9.9 ist:** „funktioniert praktisch, ist aber noch nicht 1.0“. Genau
-dafür suchen wir Fälle, in denen es das noch nicht tut.
+Thanks for testing with us! You play chess against an LLM that runs the game
+through local tools; the moves come from **Stockfish**, the commentary from
+the model. Everything runs on the catfish-llm machine – your chat only goes
+to the LLM endpoint configured there.
+
+**What 0.9.9 is:** "works in practice, but is not 1.0 yet". That is exactly
+what we are looking for: the cases where it still does not.
 
 ---
 
-## 1. Zugang
+## 1. Access
 
-Frag den Betreiber nach der Adresse des chess-Rechners. Zwei Fälle:
+Ask the operator for the address of the catfish-llm machine. Two cases:
 
-- **Im selben Netz:** `http://<LAN-IP>:8300/v1`
-- **Von außen / hinter NAT:** die WireGuard-Adresse, z. B.
+- **Same network:** `http://<LAN-IP>:8300/v1`
+- **From outside / behind NAT:** the WireGuard address, e.g.
   `http://10.7.0.116:8300/v1`
 
-Erreichbarkeit prüfen:
+Check reachability:
 
 ```bash
-curl http://<adresse>:8300/health
-# -> {"service":"chess-proxy","status":"ok","version":"0.9.9"}
+curl http://<address>:8300/health
+# -> {"service":"catfish-llm","status":"ok","version":"0.9.9"}
 ```
 
-Kommt nichts zurück und der Rechner läuft, fehlt meistens die Firewall-
-Freigabe: `sudo ufw allow in on wg0 to any port 8300 proto tcp`.
+If nothing comes back and the machine is running, the firewall rule is
+usually missing: `sudo ufw allow in on wg0 to any port 8300 proto tcp`.
 
-Auf dem chess-Rechner prüft `./start_proxy.sh check` die komplette
-Installation (Konfiguration, Python-Umgebung, Pakete, Engine) und zeigt, was
-fehlt. `./start_proxy.sh` und `./start.sh` richten Fehlendes vor dem Start
-automatisch ein.
+On the catfish-llm machine, `./start_proxy.sh check` verifies the complete
+installation (configuration, Python environment, packages, engine) and shows
+what is missing. `./start_proxy.sh` and `./start.sh` set up anything missing
+automatically before starting.
 
-### In OpenWebUI einrichten
+### Setting it up in OpenWebUI
 
-| Feld      | Wert |
-|-----------|------|
-| URL       | `http://<adresse>:8300/v1` |
-| API-Key   | leer (bzw. der Wert aus `PROXY_API_KEY`) |
-| Modell    | `gambit-schach` |
+| Field     | Value |
+|-----------|-------|
+| URL       | `http://<address>:8300/v1` |
+| API key   | empty (or the value from `PROXY_API_KEY`) |
+| Model     | `catfish-llm` |
 
-Jeder OpenAI-kompatible Client geht genauso.
+Any OpenAI-compatible client works the same way.
 
-**Ohne OpenWebUI** – direkt im Terminal (auf dem chess-Rechner):
+**Without OpenWebUI** – directly in the terminal (on the catfish-llm machine):
 
 ```bash
-./chess_shell.py --url http://<adresse>:8300 --farbe schwarz
+./chess_shell.py --url http://<address>:8300 --farbe schwarz
 ```
 
-Der Shell-Client zeigt nach jedem Zug das Brett, versteht Züge in allen drei
-Notationen und hat Kurzbefehle wie `brett`, `beste 3` oder `verlauf`
-(`hilfe` listet sie auf).
+The shell client shows the board after every move, understands moves in all
+three notations and offers short commands such as `brett`, `beste 3` or
+`verlauf` (`hilfe` lists them; the English aliases `board`, `best`, `moves`
+and `help` work as well).
 
 ---
 
-## 2. Spielen
+## 2. Playing
 
-Einfach schreiben: „Lass uns Schach spielen, ich spiele Weiß.“ Danach nennst
-du deine Züge. **Jede der drei Schreibweisen funktioniert:**
+Just write: "Let's play chess, I'll be White." After that you name your
+moves. **All three notations work:**
 
-| Notation | Beispiele |
+| Notation | Examples |
 |---|---|
 | UCI | `e2e4`, `g1f3`, `e1g1`, `e7e8q` |
-| Englische SAN | `e4`, `Nf3`, `exd5`, `O-O`, `e8=Q` |
-| Deutsche Notation | `e4`, `Sf3`, `Lxf7`, `0-0`, `e8=D` |
+| English SAN | `e4`, `Nf3`, `exd5`, `O-O`, `e8=Q` |
+| German notation | `e4`, `Sf3`, `Lxf7`, `0-0`, `e8=D` |
 
-Der Gegner antwortet in der Sprache, die du verwendest.
-
----
-
-## 3. Was wir getestet haben wollen
-
-Bitte einmal durchspielen und **notieren, was passiert**:
-
-1. **Synchronität:** Nenne nach jedem Zug `Was steht auf dem Brett?`. Der
-   vom Modell genannte Zug muss zum Verlauf passen.
-2. **Wiederholung:** Nenne denselben Zug zweimal hintereinander, oder
-   schreib „versuch es nochmal“. Früher ging hier der Zug verloren.
-3. **Notationen mischen:** Deine Züge in UCI, die Antwort in deutscher
-   Notation (oder umgekehrt). Es darf **keine**
-   `[Server-Korrektur: …]` auftauchen.
-4. **Rochade:** kurz (`e1g1` / `O-O` / `0-0`) und lang. Genauso Umwandlung.
-5. **Druck aufs Modell:** widerspreche ihm, frag „bist du sicher?“, lass dir
-   die besten Züge zeigen („Was sind hier die besten Züge?“).
-6. **Nicht-Schach:** frag zwischendurch etwas anderes. Es soll normal
-   antworten, ohne Werkzeug-Gerümpel im Text.
-7. **Neue Partie:** starte mitten im Spiel eine neue – Farbe wechseln.
-
-### Diese Meldungen sind Fehler (bitte melden)
-
-- „Das Werkzeug lieferte keine Antwort. Bitte versuch es erneut.“
-- `[Server-Korrektur: …]` obwohl die genannten Züge tatsächlich gespielt sind
-- Der Chat nennt einen Zug, der nicht im Verlauf steht (oder umgekehrt)
-- Rohes Werkzeug-Markup im Text: `TOOL: …`, PARAMS, `<|tool_call…|>`
-- Der Gegner zieht für dich, oder du zweimal hintereinander
-- Antwort in einer anderen Sprache als deiner
+The opponent replies in whichever notation you use.
 
 ---
 
-## 4. Fehler melden
+## 3. What we would like you to test
 
-Am hilfreichsten ist ein Paket aus drei Dingen:
+Please play through it once and **note down what happens**:
 
-1. **Version:** `curl http://<adresse>:8300/health`
-2. **Zugverlauf der Partie:** `partien_journal/partie_<id>.md`
-   (die `<id>` steht im ZUSTAND-Block bzw. auf `ls partien_journal/`)
-3. **Log der Anfrage:** die letzten ~30 Zeilen aus `~/chess/proxy.log`
+1. **Sync:** after every move ask `Was steht auf dem Brett?` ("What is on the
+   board?"). The move the model names must match the move history.
+2. **Repetition:** name the same move twice in a row, or write "try that
+   again". In the past the move got lost here.
+3. **Mixed notations:** your moves in UCI, the reply in German notation (or
+   the other way round). There must be **no** `[Server-Korrektur: …]`
+   appearing.
+4. **Castling:** short (`e1g1` / `O-O` / `0-0`) and long. Same for promotion.
+5. **Pressure on the model:** contradict it, ask "are you sure?", have it
+   show the best moves ("What are the best moves here?").
+6. **Non-chess:** ask something else in between. It should answer normally,
+   without tool clutter in the text.
+7. **New game:** start a new game mid-game – switch colours.
 
-Dazu kurz: *was du geschrieben hast*, *was du erwartet hast*, *was passiert
-ist*. Wenn möglich den Chatverlauf als Screenshot oder Text.
+### These messages are bugs (please report them)
+
+- "Das Werkzeug lieferte keine Antwort. Bitte versuch es erneut." (The tool
+  returned no answer.)
+- `[Server-Korrektur: …]` even though the moves named were actually played
+- The chat names a move that is not in the history (or the other way round)
+- Raw tool markup in the text: `TOOL: …`, PARAMS, `<|tool_call…|>`
+- The opponent moves for you, or you move twice in a row
+- An answer in a language other than yours
+
+The program's own messages are in German; that is not a bug in itself. What
+matters is whether they appear at all, and whether the board stays in sync.
 
 ---
 
-## 5. Bekannte Grenzen (kein Fehler)
+## 4. Reporting bugs
 
-- **Rate-Limits:** Der Standard-LLM-Endpunkt ist ein Free-Tier-Router. Bei
-  HTTP 502 / „upstream_error“ bitte die Nachricht einfach nochmal senden.
-  Die Partie selbst bleibt intakt.
-- **Partien liegen im Speicher.** Ein Neustart des Proxys beendet laufende
-  Partien; abgeschlossene landen als PGN unter `partien_proxy/`.
-- **Der Chat ist das Gedächtnis.** Wird der Verlauf im Client gelöscht,
-  beginnt ein neues Spiel.
-- **Die Stärke** hängt an `ENGINE_SKILL` in `chess.ini` (0–20, Standard 12).
+The most helpful thing is a package of three:
+
+1. **Version:** `curl http://<address>:8300/health`
+2. **Move history of the game:** `partien_journal/partie_<id>.md`
+   (the `<id>` is in the ZUSTAND block or from `ls partien_journal/`)
+3. **Request log:** the last ~30 lines from `~/catfish-llm/proxy.log`
+
+Plus three sentences: *what you wrote*, *what you expected*, *what actually
+happened*. If you can, attach the chat as a screenshot or as text.
+
+---
+
+## 5. Known limits (not bugs)
+
+- **Rate limits:** the default LLM endpoint is a free-tier router. On
+  HTTP 502 / "upstream_error" please simply send the message again.
+  The game itself stays intact.
+- **Games live in memory.** Restarting the proxy ends running games;
+  finished ones are stored as PGN under `partien_proxy/`.
+- **The chat is the memory.** If the history is deleted in the client, a new
+  game begins.
+- **Strength** depends on `ENGINE_SKILL` in `chess.ini` (0–20, default 12).
 
 ---
 
 Copyright (C) 2026 Olav (https://github.com/o-valo) ·
 SPDX-License-Identifier: GPL-3.0-or-later ·
-Freie Software unter der GNU GPL v3 oder später, ohne Gewährleistung –
-siehe [`LICENSE`](LICENSE).
+Free software under the GNU GPL v3 or later, without warranty –
+see [`LICENSE`](LICENSE).

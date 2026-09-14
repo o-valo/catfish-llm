@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Dateiname: pruefen.sh
-# Projekt:   chess – LLM + Stockfish Schachanbindung
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -296,7 +296,7 @@ sicherstellen() {
         return 0
     fi
 
-    echo "chess ist noch nicht startklar:"
+    echo "catfish-llm ist noch nicht startklar:"
     echo "$bericht"
     echo
     echo "Die fehlenden Teile werden jetzt automatisch eingerichtet."

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # ==============================================================================
 # Dateiname: chess_proxy.py
-# Projekt:   chess – LLM + Stockfish Schachanbindung (Tool-API)
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung (Tool-API)
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -63,7 +63,7 @@ WERKZEUGE = {
 
 SYSTEM_ERGAENZUNG = """
 
-# Schach-Werkzeuge (chess-proxy)
+# Schach-Werkzeuge (catfish-llm)
 Du spielst hier selbst eine regelkonforme Schachpartie. Nutze die lokalen
 Schach-Werkzeuge als dein Brett und deine Zugkontrolle.
 Wenn der Nutzer Schach spielen möchte oder Fragen zu Stellungen/Zügen hat,
@@ -352,7 +352,7 @@ def lade_konfig():
 # App-Erzeugung ( closures für Konfig/Service/LLM – gut testbar )
 # ---------------------------------------------------------------------------- #
 def erstelle_app(konfig, service, llm):
-    app = Flask("chess-proxy")
+    app = Flask("catfish-llm")
     app.config["JSON_AS_ASCII"] = False
 
     # ------------------------------------------------------------------ #
@@ -572,7 +572,7 @@ def erstelle_app(konfig, service, llm):
     # ------------------------------------------------------------------ #
     @app.route("/health", methods=["GET"])
     def health():
-        return jsonify({"status": "ok", "service": "chess-proxy",
+        return jsonify({"status": "ok", "service": "catfish-llm",
                         "version": VERSION})
 
     @app.route("/v1/models", methods=["GET"])
@@ -584,7 +584,7 @@ def erstelle_app(konfig, service, llm):
         jetzt = int(time.time())
         return jsonify({"object": "list", "data": [
             {"id": konfig["modell_name"], "object": "model", "created": jetzt,
-             "owned_by": "chess-proxy"},
+             "owned_by": "catfish-llm"},
         ]})
 
     @app.route("/v1/chat/completions", methods=["POST"])
@@ -692,7 +692,7 @@ def erstelle_app(konfig, service, llm):
                 # können keinen alten Tool-Output überstimmen.
                 aktualisiere_partie_kontext(msgs, sid)
                 antwort = llm.chat(msgs, max_tokens=konfig["max_tokens"])
-                print(f"[chess-proxy] Loop {loop_nr + 1}: "
+                print(f"[catfish-llm] Loop {loop_nr + 1}: "
                       f"LLM-Antwort ({len(antwort)} Zeichen): "
                       f"{antwort[:120].replace(chr(10), ' / ')}", flush=True)
                 # Manche Upstream-Modelle antworten gelegentlich mit Junk
@@ -740,7 +740,7 @@ def erstelle_app(konfig, service, llm):
                         # Announce-only: Server repariert durch Zwangsausführung
                         if kontext == "ausfuehrung" and \
                                 fuehre_menschen_zug_erzwungen():
-                            print("[chess-proxy] Announce-only repariert: "
+                            print("[catfish-llm] Announce-only repariert: "
                                   "Zug serverseitig ausgeführt", flush=True)
                             continue
                         if kontext == "phantom_zug" and \
@@ -749,7 +749,7 @@ def erstelle_app(konfig, service, llm):
                             # Antwort nennt nur Beispielzüge wie „e4“). Ein
                             # zweiter Loop kostet nur einen LLM-Aufruf und
                             # läuft ins Rate-Limit – die Antwort ist gültig.
-                            print("[chess-proxy] Phantom-Ermahnung bereits "
+                            print("[catfish-llm] Phantom-Ermahnung bereits "
                                   "erfolgt – Antwort wird ausgeliefert",
                                   flush=True)
                             break
@@ -766,7 +766,7 @@ def erstelle_app(konfig, service, llm):
                     # wenn es ihn trotzdem wiederholt, den Loop beenden.
                     kennung = name + ":" + json.dumps(params, sort_keys=True)
                     if kennung in ausgefuehrte_calls:
-                        print(f"[chess-proxy] Wiederholter Aufruf: "
+                        print(f"[catfish-llm] Wiederholter Aufruf: "
                               f"{kennung[:80]}", flush=True)
                         if "wiederholung" in _ermahnt:
                             neu_fragen = False
@@ -850,7 +850,7 @@ def erstelle_app(konfig, service, llm):
             # Liegt aus einem früheren Loop schon eine fertige Antwort vor,
             # wird sie unten regulär ausgeliefert (kein 502 für den Client).
             llm_ausfall = exc
-            print(f"[chess-proxy] Upstream-Fehler im Loop: {exc}", flush=True)
+            print(f"[catfish-llm] Upstream-Fehler im Loop: {exc}", flush=True)
 
         if llm_ausfall is not None and (not antwort or parse_tool_calls(antwort)):
             return jsonify({"error": {"message": str(llm_ausfall),
@@ -861,7 +861,7 @@ def erstelle_app(konfig, service, llm):
         # verpasst, leer oder fehlerhaft aufgerufen, spielt der Server ihn
         # jetzt selbst aus der letzten Nutzernachricht aus.
         if not menschenzug_ausgefuehrt and fuehre_menschen_zug_erzwungen():
-            print("[chess-proxy] Finale Reparatur: Menschenzug serverseitig "
+            print("[catfish-llm] Finale Reparatur: Menschenzug serverseitig "
                   "ausgeführt", flush=True)
 
         # Danach gilt: Nach einem ausgeführten Menschenzug darf niemals eine
@@ -964,7 +964,7 @@ def erstelle_app(konfig, service, llm):
 
     @app.errorhandler(500)
     def server_fehler(_):
-        return jsonify({"error": "Interner Fehler im chess-proxy"}), 500
+        return jsonify({"error": "Interner Fehler in catfish-llm"}), 500
 
     return app
 
@@ -984,7 +984,7 @@ def main():
         max_tokens=konfig["llm"]["max_tokens"],
     )
     app = erstelle_app(konfig, service, llm)
-    print(f"chess-proxy v{VERSION} läuft auf http://{konfig['host']}:{konfig['port']} "
+    print(f"catfish-llm v{VERSION} läuft auf http://{konfig['host']}:{konfig['port']} "
           f"(Modell '{konfig['modell_name']}' via {konfig['llm']['base_url']})",
           flush=True)
     serve(app, host=konfig["host"], port=konfig["port"], threads=8)

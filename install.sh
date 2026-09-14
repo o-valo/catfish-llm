@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ==============================================================================
 # Dateiname: install.sh
-# Projekt:   chess – LLM + Stockfish Schachanbindung
+# Projekt:   catfish-llm – LLM + Stockfish Schachanbindung
 # ==============================================================================
 # Copyright (C) 2026 Olav (https://github.com/o-valo)
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -50,7 +50,7 @@ fehler()  { echo "FEHLER: $*" >&2; }
 
 usage() {
     cat <<'EOF'
-install.sh – chess einrichten bzw. Fehlendes reparieren
+install.sh – catfish-llm einrichten bzw. Fehlendes reparieren
 
 Aufruf:
   ./install.sh                     alles einrichten / reparieren
@@ -98,7 +98,7 @@ if [ "$CHECK" = "1" ]; then
     echo
     if pruefen_alle; then
         echo
-        echo "Ergebnis: alles bereit – chess kann starten."
+        echo "Ergebnis: alles bereit – catfish-llm kann starten."
         exit 0
     fi
     echo
@@ -107,7 +107,7 @@ if [ "$CHECK" = "1" ]; then
     exit 1
 fi
 
-echo "chess-Installer – es wird nur eingerichtet, was fehlt."
+echo "catfish-llm-Installer – es wird nur eingerichtet, was fehlt."
 echo "Projektordner: $(pwd)"
 
 # ---------------------------------------------------------------------------- #
@@ -252,7 +252,7 @@ if ! pruefen_alle; then
 fi
 
 echo
-echo "Fertig – chess ist einsatzbereit."
+echo "Fertig – catfish-llm ist einsatzbereit."
 echo
 echo "  Proxy starten:      ./start_proxy.sh          (für OpenWebUI & Co.)"
 echo "  Adressen anzeigen:  ./start_proxy.sh adressen"
