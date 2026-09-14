@@ -2,8 +2,8 @@
   <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
 </p>
 
-Vorwort:
-Der Schachtürke war gestern, catfish-llm bringt einem LLM das Schachspielen bei :-)
+## Vorwort:
+## Der Schachtürke war gestern, catfish-llm bringt einem LLM das Schachspielen bei :-)
 
 Naja, nicht ganz, ich habe da eher die moderne Version eines "Schachtürken" gebaut. Es schließt auf einfache Art die Lücke, dass selbst große LLMs in der Regel bisher kein Schach spielen können. Und wenn sie es jetzt doch wirklich können, haben die Entwickler mit Sicherheit ebenfalls einen "Schachtürken" eingebaut :-) Bei mir greift das LLM intern auf die Stockfish-Engine zurück.
 
