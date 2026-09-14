@@ -2,6 +2,16 @@
   <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
 </p>
 
+Vorwort:
+Der Schachtürke war gestern, catfish-llm bringt einem LLM das Schachspielen bei :-)
+
+Naja, nicht ganz, ich habe da eher die moderne Version eines "Schachtürken" gebaut. Es schließt auf einfache Art die Lücke, dass selbst große LLMs in der Regel bisher kein Schach spielen können. Und wenn sie es jetzt doch wirklich können, haben die Entwickler mit Sicherheit ebenfalls einen "Schachtürken" eingebaut :-) Bei mir greift das LLM intern auf die Stockfish-Engine zurück.
+
+Wer es selbst mal testen mag, kann sich die Software ganz einfach auf seinem Rechner unter Linux installieren. Unter Windows sollte es auch mit WSL2 funktionieren, ist aber bislang ungetestet.
+
+
+
+
 # catfish-llm – spielt Schach mit Stockfish im Hintergrund
 
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
