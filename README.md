@@ -2,7 +2,7 @@
   <img src="catfish-llm.jpg" alt="catfish-llm Banner" width="100%">
 </p>
 
-# catfish-llcatfishchess with Stockfish in the background
+# catfish-llm plays chess with Stockfish in the background
 
 ![Powered with AI](https://img.shields.io/badge/Powered%20with-AI-8A2BE2)
 ![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue)
